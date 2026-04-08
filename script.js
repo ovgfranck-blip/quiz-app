@@ -17,3 +17,19 @@ function reinitialiserTimer() {
     clearInterval(timer);
     tempsRestant = 30;
 }
+
+// Score final - Franck (JS avancé)
+let score = 0;
+let totalQuestions = 10;
+
+function verifierReponse(reponseDonnee, reponsecorrecte) {
+    if (reponseDonnee === reponsecorrecte) {
+        score++;
+    }
+}
+
+function afficherScoreFinal() {
+    clearInterval(timer);
+    document.getElementById("score").textContent = 
+        "Votre score : " + score + " / " + totalQuestions;
+}
