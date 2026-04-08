@@ -33,3 +33,22 @@ function afficherScoreFinal() {
     document.getElementById("score").textContent = 
         "Votre score : " + score + " / " + totalQuestions;
 }
+
+// Feedback visuel - Franck (JS avancé)
+function afficherFeedback(estCorrect) {
+    let boutons = document.querySelectorAll(".choix");
+    boutons.forEach(function(bouton) {
+        if (bouton.textContent === estCorrect) {
+            bouton.style.backgroundColor = "green";
+        } else {
+            bouton.style.backgroundColor = "red";
+        }
+    });
+
+    setTimeout(function() {
+        boutons.forEach(function(bouton) {
+            bouton.style.backgroundColor = "";
+        });
+        reinitialiserTimer();
+    }, 1000);
+}
