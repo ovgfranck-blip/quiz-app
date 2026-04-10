@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Interactif</title>
+
+  <!-- Le CSS de l'équipe "Stylisation" -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <header>
+    <h1>Quiz Interactif</h1>
+  </header>
+
+  <main>
+
+    <!-- ============================================
+         SECTION 1 : FORMULAIRE DE DÉMARRAGE
+         Responsable CSS  : équipe Stylisation
+         Responsable JS   : équipe JS Core
+    ============================================ -->
+    <section id="section-formulaire">
+
+      <h2>Informations du joueur</h2>
+
+      <form id="formulaire-quiz">
+
+        <div class="champ-groupe">
+          <label for="input-nom">Votre nom</label>
+          <input
+            type="text"
+            id="input-nom"
+            name="nom"
+            placeholder="Entrez votre nom"
+            required
+          />
+        </div>
+
+        <div class="champ-groupe">
+          <label for="input-difficulte">Niveau de difficulté</label>
+          <select id="input-difficulte" name="difficulte">
+            <option value="facile">Facile</option>
+            <option value="moyen" selected>Moyen</option>
+            <option value="difficile">Difficile</option>
+          </select>
+        </div>
+
+        <div class="champ-groupe">
+          <label for="input-categorie">Catégorie</label>
+          <select id="input-categorie" name="categorie">
+            <option value="general">Culture générale</option>
+            <option value="science">Sciences</option>
+            <option value="histoire">Histoire</option>
+            <option value="informatique">Informatique</option>
+          </select>
+        </div>
+
+        <button type="button" id="btn-demarrer" class="btn btn-primaire">
+          Démarrer le quiz
+        </button>
+
+      </form>
+
+    </section>
+
+
+    <!-- ============================================
+         SECTION 2 : ZONE SCORE (pendant le quiz)
+         Responsable CSS  : équipe Stylisation
+         Responsable JS   : équipe JS Avancé (score + timer)
+    ============================================ -->
+    <section id="section-score" class="cache">
+
+      <div id="zone-score">
+
+        <div class="score-element" id="bloc-joueur">
+          <span class="score-label">Joueur</span>
+          <span class="score-valeur" id="affichage-nom">—</span>
+        </div>
+
+        <div class="score-element" id="bloc-points">
+          <span class="score-label">Score</span>
+          <span class="score-valeur" id="affichage-points">0</span>
+        </div>
+
+        <div class="score-element" id="bloc-question">
+          <span class="score-label">Question</span>
+          <span class="score-valeur" id="affichage-question">1 / 10</span>
+        </div>
+
+        <!-- Timer : géré par l'équipe JS Avancé -->
+        <div class="score-element" id="bloc-timer">
+          <span class="score-label">Temps restant</span>
+          <span class="score-valeur" id="affichage-timer">30</span>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ============================================
+         SECTION 3 : ZONE DE QUESTION
+         Responsable CSS  : équipe Stylisation
+         Responsable JS   : équipe JS Core
+    ============================================ -->
+    <section id="section-question" class="cache">
+
+      <p id="numero-question">Question 1 / 10</p>
+
+      <!-- Barre de progression : animée par équipe JS Avancé -->
+      <div id="barre-progression-conteneur">
+        <div id="barre-progression"></div>
+      </div>
+
+      <h2 id="texte-question">La question s'affiche ici</h2>
+
+      <ul id="liste-choix">
+        <!-- Les choix sont générés dynamiquement par l'équipe JS Core -->
+        <!-- Exemple de structure d'un choix :
+        <li>
+          <button class="btn-choix" data-index="0">Choix A</button>
+        </li>
+        -->
+      </ul>
+
+      <!-- Feedback visuel : géré par l'équipe JS Avancé -->
+      <div id="zone-feedback" class="cache">
+        <span id="icone-feedback"></span>
+        <p id="texte-feedback"></p>
+      </div>
+
+      <button type="button" id="btn-suivant" class="btn btn-secondaire cache">
+        Question suivante
+      </button>
+
+    </section>
+
+
+    <!-- ============================================
+         SECTION 4 : ZONE RÉSULTAT (fin du quiz)
+         Responsable CSS  : équipe Stylisation
+         Responsable JS   : équipe JS Avancé (calcul score final)
+    ============================================ -->
+    <section id="section-resultat" class="cache">
+
+      <div id="zone-resultat">
+
+        <div id="resultat-entete">
+          <span id="resultat-emoji"></span>
+          <h2 id="resultat-titre">Résultat</h2>
+          <p id="resultat-sous-titre"></p>
+        </div>
+
+        <div id="resultat-score-principal">
+          <span id="resultat-points-final">0</span>
+          <span id="resultat-points-label">points</span>
+        </div>
+
+        <div id="resultat-statistiques">
+
+          <div class="stat-element" id="stat-correctes">
+            <span class="stat-valeur" id="nb-correctes">0</span>
+            <span class="stat-label">Bonnes réponses</span>
+          </div>
+
+          <div class="stat-element" id="stat-incorrectes">
+            <span class="stat-valeur" id="nb-incorrectes">0</span>
+            <span class="stat-label">Mauvaises réponses</span>
+          </div>
+
+          <div class="stat-element" id="stat-pourcentage">
+            <span class="stat-valeur" id="pourcentage-reussite">0%</span>
+            <span class="stat-label">Réussite</span>
+          </div>
+
+          <div class="stat-element" id="stat-temps">
+            <span class="stat-valeur" id="temps-total">0s</span>
+            <span class="stat-label">Temps total</span>
+          </div>
+
+        </div>
+
+        <div id="resultat-message">
+          <p id="texte-message-final"></p>
+        </div>
+
+        <div id="resultat-actions">
+          <button type="button" id="btn-rejouer" class="btn btn-primaire">
+            Rejouer
+          </button>
+          <button type="button" id="btn-accueil" class="btn btn-secondaire">
+            Retour à l'accueil
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Quiz Interactif &mdash; Projet de groupe</p>
+  </footer>
+
+  <!-- Le JS Core de l'équipe "Affichage questions & navigation" -->
+  <script src="quiz-core.js"></script>
+
+  <!-- Le JS Avancé de l'équipe "Score, timer & feedback" -->
+  <script src="quiz-avance.js"></script>
+
+</body>
+</html>
