@@ -1,46 +1,39 @@
-
+// ============================================================
+//  JS CORE - Astou (Affichage questions et navigation)
+// ============================================================
 let questions = [];
 let currentQuestionIndex = 0;
 let selectedAnswer = null;
 let userAnswers = [];
 
-// Éléments du DOM
-const domainSection    = document.getElementById("domain-section");
-const loadingSection   = document.getElementById("loading-section");
-const quizSection      = document.getElementById("quiz-section");
-const questionText     = document.getElementById("question-text");
-const choicesContainer = document.getElementById("choices-container");
-const nextBtn          = document.getElementById("next-btn");
-const questionCounter  = document.getElementById("question-counter");
+const domainSection    = document.getElementById("section-formulaire");
+const quizSection      = document.getElementById("section-question");
+const questionText     = document.getElementById("texte-question");
+const choicesContainer = document.getElementById("liste-choix");
+const nextBtn          = document.getElementById("btn-suivant");
+const questionCounter  = document.getElementById("numero-question");
 
-// ============================================================
-//  ÉTAPE 1 : L'UTILISATEUR TAPE SON DOMAINE ET DÉMARRE
-// ============================================================
 function startQuiz() {
-  const input = document.getElementById("domain-input");
-  const domain = input.value.trim();
+  const input = document.getElementById("input-nom");
+  const domain = document.getElementById("input-categorie").value;
 
-  if (!domain) {
+  if (!input.value.trim()) {
     input.style.border = "2px solid red";
     return;
   }
 
   input.style.border = "";
-  domainSection.classList.add("hidden");
+  domainSection.classList.add("cache");
+  document.getElementById("section-score").classList.remove("cache");
+  document.getElementById("affichage-nom").textContent = input.value.trim();
   generateQuestions(domain);
 }
 
-// ============================================================
-//  ÉTAPE 2 : GÉNÉRER LES QUESTIONS VIA GROQ
-// ============================================================
 async function generateQuestions(domain) {
-  loadingSection.classList.remove("hidden");
-  quizSection.classList.add("hidden");
+  quizSection.classList.add("cache");
 
-  // Seed aléatoire pour avoir des questions différentes à chaque fois
   const seed = Math.floor(Math.random() * 100000);
-
-  const GROQ_API_KEY = "REMPLACE_PAR_TA_CLE_GROQ"; // ← à remplacer
+  const GROQ_API_KEY = "REMPLACE_PAR_TA_CLE_GROQ";
 
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -60,16 +53,14 @@ async function generateQuestions(domain) {
           {
             role: "user",
             content: `Seed:${seed}. Génère 5 questions de quiz variées sur le domaine : "${domain}".
-Varie les formulations et le niveau à chaque fois.
-Format JSON exact à respecter :
+Format JSON exact :
 [
   {
     "question": "Texte de la question ?",
     "options": ["choix a", "choix b", "choix c", "choix d"],
     "answer": 2
   }
-]
-L'index "answer" correspond à la bonne réponse dans "options" (0, 1, 2 ou 3).`
+]`
           }
         ]
       })
@@ -80,75 +71,67 @@ L'index "answer" correspond à la bonne réponse dans "options" (0, 1, 2 ou 3).`
     const clean = raw.replace(/```json|```/g, "").trim();
     questions = JSON.parse(clean);
 
-    loadingSection.classList.add("hidden");
-    quizSection.classList.remove("hidden");
+    quizSection.classList.remove("cache");
     initQuiz();
 
   } catch (error) {
     console.error("Erreur Groq :", error);
-    loadingSection.innerHTML = `
-      <p>Erreur lors de la génération des questions.</p>
-      <button onclick="location.reload()">Réessayer</button>
-    `;
   }
 }
 
-// ============================================================
-//  INITIALISATION
-// ============================================================
 function initQuiz() {
   currentQuestionIndex = 0;
   selectedAnswer = null;
   userAnswers = [];
   displayQuestion();
+  demarrerTimer();
 }
 
-// ============================================================
-//  AFFICHER UNE QUESTION À LA FOIS AVEC 4 CHOIX
-// ============================================================
 function displayQuestion() {
   const question = questions[currentQuestionIndex];
 
   questionCounter.textContent = `Question ${currentQuestionIndex + 1} / ${questions.length}`;
   questionText.textContent = question.question;
+  document.getElementById("affichage-question").textContent =
+    `${currentQuestionIndex + 1} / ${questions.length}`;
 
   choicesContainer.innerHTML = "";
   selectedAnswer = null;
-  nextBtn.disabled = true;
+  nextBtn.classList.add("cache");
 
-  // Créer les 4 boutons de choix
   question.options.forEach((option, index) => {
+    const li = document.createElement("li");
     const btn = document.createElement("button");
-    btn.classList.add("choice-btn");
+    btn.classList.add("btn-choix");
     btn.textContent = option;
     btn.dataset.index = index;
-    btn.addEventListener("click", () => selectAnswer(btn, index));
-    choicesContainer.appendChild(btn);
+    btn.addEventListener("click", () => selectAnswer(btn, index, question.options[question.answer]));
+    li.appendChild(btn);
+    choicesContainer.appendChild(li);
   });
 }
 
-// ============================================================
-//  SÉLECTIONNER UNE RÉPONSE
-// ============================================================
-function selectAnswer(clickedBtn, answerIndex) {
-  document.querySelectorAll(".choice-btn").forEach(btn => {
+function selectAnswer(clickedBtn, answerIndex, bonneReponse) {
+  document.querySelectorAll(".btn-choix").forEach(btn => {
     btn.classList.remove("selected");
   });
   clickedBtn.classList.add("selected");
   selectedAnswer = answerIndex;
-  nextBtn.disabled = false;
+  nextBtn.classList.remove("cache");
+
+  afficherFeedback(bonneReponse);
+  verifierReponse(clickedBtn.textContent, bonneReponse);
 }
 
-// ============================================================
-//  NAVIGATION : QUESTION SUIVANTE
-// ============================================================
-function nextQuestion() {
+function questionSuivante() {
   if (selectedAnswer === null) return;
 
   userAnswers.push(selectedAnswer);
   currentQuestionIndex++;
 
   if (currentQuestionIndex < questions.length) {
+    reinitialiserTimer();
+    demarrerTimer();
     displayQuestion();
   } else {
     finishQuiz();
@@ -156,53 +139,90 @@ function nextQuestion() {
 }
 
 function finishQuiz() {
-  quizSection.classList.add("hidden");
-  document.getElementById("result-section").classList.remove("hidden");
-
-  // Franck a besoin de ces données pour calculer le score
-  window.quizAnswers    = userAnswers;    // réponses de l'utilisateur
-  window.quizQuestions  = questions;      // questions avec les bonnes réponses
-  window.totalQuestions = questions.length;
-
-  // Franck appelle showFeedback() depuis son fichier JS avancé
-  if (typeof showFeedback === "function") {
-    showFeedback(userAnswers, questions);
-  }
+  quizSection.classList.add("cache");
+  document.getElementById("section-score").classList.add("cache");
+  document.getElementById("section-resultat").classList.remove("cache");
+  afficherScoreFinal();
 }
 
-// ============================================================
-//  REJOUER
-// ============================================================
 function restartQuiz() {
-  document.getElementById("result-section").classList.add("hidden");
-  domainSection.classList.remove("hidden");
-  document.getElementById("domain-input").value = "";
+  document.getElementById("section-resultat").classList.add("cache");
+  domainSection.classList.remove("cache");
+  document.getElementById("input-nom").value = "";
   questions = [];
   userAnswers = [];
 }
 
-// ============================================================
-//  ÉVÉNEMENTS
-// ============================================================
-nextBtn.addEventListener("click", nextQuestion);
+nextBtn.addEventListener("click", questionSuivante);
 
-const startBtn = document.getElementById("start-btn");
+const startBtn = document.getElementById("btn-demarrer");
 if (startBtn) startBtn.addEventListener("click", startQuiz);
 
-// Permettre de démarrer avec la touche Entrée
-const domainInput = document.getElementById("domain-input");
-if (domainInput) {
-  domainInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") startQuiz();
-  });
-}
-
-const restartBtn = document.getElementById("restart-btn");
+const restartBtn = document.getElementById("btn-rejouer");
 if (restartBtn) restartBtn.addEventListener("click", restartQuiz);
 
-document.addEventListener("DOMContentLoaded", () => {
-  domainSection.classList.remove("hidden");
-  loadingSection.classList.add("hidden");
-  quizSection.classList.add("hidden");
-  document.getElementById("result-section").classList.add("hidden");
-});
+const accueilBtn = document.getElementById("btn-accueil");
+if (accueilBtn) accueilBtn.addEventListener("click", restartQuiz);
+
+// ============================================================
+//  JS AVANCÉ - Franck (Timer, Score, Feedback visuel)
+// ============================================================
+let tempsRestant = 30;
+let timer;
+
+function demarrerTimer() {
+    timer = setInterval(function() {
+        tempsRestant--;
+        document.getElementById("affichage-timer").textContent = tempsRestant + "s";
+        if (tempsRestant === 0) {
+            clearInterval(timer);
+            questionSuivante();
+        }
+    }, 1000);
+}
+
+function reinitialiserTimer() {
+    clearInterval(timer);
+    tempsRestant = 30;
+    document.getElementById("affichage-timer").textContent = "30s";
+}
+
+let score = 0;
+let totalQuestions = 10;
+
+function verifierReponse(reponseDonnee, reponseCorrecte) {
+    if (reponseDonnee === reponseCorrecte) {
+        score++;
+    }
+}
+
+function afficherScoreFinal() {
+    clearInterval(timer);
+    document.getElementById("affichage-points").textContent = score;
+    document.getElementById("resultat-points-final").textContent = score;
+    document.getElementById("nb-correctes").textContent = score;
+    document.getElementById("nb-incorrectes").textContent = totalQuestions - score;
+    document.getElementById("pourcentage-reussite").textContent =
+        Math.round((score / totalQuestions) * 100) + "%";
+}
+
+function afficherFeedback(reponseCorrecte) {
+    let boutons = document.querySelectorAll(".btn-choix");
+    boutons.forEach(function(bouton) {
+        if (bouton.textContent === reponseCorrecte) {
+            bouton.style.backgroundColor = "green";
+        } else {
+            bouton.style.backgroundColor = "red";
+        }
+    });
+
+    document.getElementById("zone-feedback").classList.remove("cache");
+
+    setTimeout(function() {
+        boutons.forEach(function(bouton) {
+            bouton.style.backgroundColor = "";
+        });
+        document.getElementById("zone-feedback").classList.add("cache");
+        reinitialiserTimer();
+    }, 1000);
+}
