@@ -56,3 +56,6 @@ body {
     color: #4ecca3;
     margin-top: 20px;
 }
+.cache {
+    display: none;
+}
