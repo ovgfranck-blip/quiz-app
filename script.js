@@ -1,4 +1,4 @@
-// Timer - Franck (JS avancé)
+
 let tempsRestant = 30;
 let timer;
 
@@ -17,8 +17,7 @@ function reinitialiserTimer() {
     clearInterval(timer);
     tempsRestant = 30;
 }
-
-// Score final - Franck (JS avancé)
+ 
 let score = 0;
 let totalQuestions = 10;
 
@@ -34,7 +33,7 @@ function afficherScoreFinal() {
         "Votre score : " + score + " / " + totalQuestions;
 }
 
-// Feedback visuel - Franck (JS avancé)
+
 function afficherFeedback(estCorrect) {
     let boutons = document.querySelectorAll(".choix");
     boutons.forEach(function(bouton) {
