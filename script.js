@@ -33,7 +33,7 @@ async function generateQuestions(domain) {
   quizSection.classList.add("cache");
 
   const seed = Math.floor(Math.random() * 100000);
-  const GROQ_API_KEY = "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";
+  const GROQ_API_KEY = "REMPLACE_PAR_TA_CLE_GROQ";
 
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
