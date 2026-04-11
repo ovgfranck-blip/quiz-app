@@ -1,3 +1,4 @@
+/* Reset général */
 * {
     margin: 0;
     padding: 0;
@@ -6,37 +7,167 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #1a1a2e;
+    background-color: #001f3f;
     color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+header {
+    background-color: #0a2a4a;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px solid #e94560;
+}
+
+header h1 {
+    font-size: 28px;
+    color: #e94560;
+}
+
+/* Main */
+main {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    padding: 20px;
 }
 
-/* Conteneur principal */
-#quiz-container {
+/* Footer */
+footer {
+    background-color: #16213e;
+    padding: 15px;
+    text-align: center;
+    border-top: 2px solid #e94560;
+    font-size: 14px;
+    color: #aaa;
+}
+
+/* Sections */
+section {
     background-color: #16213e;
     border-radius: 10px;
     padding: 30px;
-    width: 500px;
-    text-align: center;
+    width: 100%;
+    max-width: 600px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-/* Timer */
-#timer {
-    font-size: 24px;
-    color: #e94560;
+/* Formulaire */
+h2 {
+    text-align: center;
     margin-bottom: 20px;
+    color: #e94560;
 }
 
-/* Boutons de réponse */
-.choix {
+.champ-groupe {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+    color: #aaa;
+}
+
+input, select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #0f3460;
+    background-color:  #1a4a7a;
+    color: white;
+    font-size: 16px;
+}
+
+/* Boutons */
+.btn {
     display: block;
     width: 100%;
     padding: 12px;
-    margin: 8px 0;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.btn-primaire {
+    background-color: #e94560;
+    color: white;
+}
+
+.btn-primaire:hover {
+    background-color: #c73652;
+}
+
+.btn-secondaire {
+    background-color: #0f3460;
+    color: white;
+}
+
+.btn-secondaire:hover {
+    background-color: #1a4a80;
+}
+
+/* Zone score */
+#zone-score {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.score-element {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #0f3460;
+    padding: 10px 15px;
+    border-radius: 8px;
+    flex: 1;
+}
+
+.score-label {
+    font-size: 12px;
+    color: #aaa;
+}
+
+.score-valeur {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4ecca3;
+}
+
+/* Questions */
+#numero-question {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+#texte-question {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+/* Choix */
+#liste-choix {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-choix {
+    width: 100%;
+    padding: 12px;
     background-color: #0f3460;
     color: white;
     border: none;
@@ -46,16 +177,81 @@ body {
     transition: background-color 0.3s;
 }
 
-.choix:hover {
+.btn-choix:hover {
     background-color: #e94560;
 }
 
-/* Score */
-#score {
-    font-size: 22px;
+.btn-choix.selected {
+    background-color: #e94560;
+}
+
+/* Barre de progression */
+#barre-progression-conteneur {
+    background-color: #0f3460;
+    border-radius: 5px;
+    height: 8px;
+    margin-bottom: 20px;
+}
+
+#barre-progression {
+    background-color: #e94560;
+    height: 100%;
+    border-radius: 5px;
+    width: 0%;
+    transition: width 0.3s;
+}
+
+/* Résultat */
+#zone-resultat {
+    text-align: center;
+}
+
+#resultat-score-principal {
+    font-size: 48px;
+    font-weight: bold;
     color: #4ecca3;
+    margin: 20px 0;
+}
+
+#resultat-statistiques {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.stat-element {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #0f3460;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.stat-valeur {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4ecca3;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #aaa;
+}
+
+#resultat-actions {
+    display: flex;
+    gap: 10px;
     margin-top: 20px;
 }
+
+#resultat-actions .btn {
+    flex: 1;
+}
+
+/* Cacher les sections */
 .cache {
     display: none;
 }
